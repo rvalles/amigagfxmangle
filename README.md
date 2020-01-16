@@ -10,5 +10,7 @@ Currently featuring:
 Writing sliced HAM6 images to ILBM is still pending, until I investigate the unofficial extensions to ILBM for dynamic palette changes. Some methods to make non-sliced HAM6 images will likely be written first.
 
 Here's a sample SHAM picture, parrots from the Kodak test image set.
-
 ![kodak23 parrots sham](https://b.rvalles.net/unsorted/kodak23_parrots_sham.png)
+
+Same SHAM parrots, but recovering some rgb24 detail via probability-based dithering done in HAM.
+![kodak23 parrots sham](https://b.rvalles.net/unsorted/kodak23_parrots_sham_dither_rnd.png)

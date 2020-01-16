@@ -227,11 +227,17 @@ def rgb24toham6md(pixels, palette):
 def rgb24toham6mddithrnd(pixels, palette):
   hc = pygame.Color(0,0,0)
   for sc in pixels:
-    dr = abs((sc.r>>4)-hc.r)
-    dg = abs((sc.g>>4)-hc.g)
-    db = abs((sc.b>>4)-hc.b)
+    tr = sc.r>>4
+    tg = sc.g>>4
+    tb = sc.b>>4
+    dr = abs(tr-hc.r)
+    dg = abs(tg-hc.g)
+    db = abs(tb-hc.b)
     dm = max(dr, dg, db)
-    if dm == dg:
+    dc = [(1 if x else 0) for x in [dr,dg,db]].count(1)
+    if dc > 1 and (tr,tg,tb) in palette:
+      mode = HAM_SET
+    elif dm == dg:
       mode = HAM_MODIFY_GREEN
     elif dm == dr:
       mode = HAM_MODIFY_RED
@@ -253,7 +259,9 @@ def rgb24toham6mddithrnd(pixels, palette):
       if random.randrange(17) < sc.b%17:
         value=min(value+1,15)
       hc = pygame.Color(hc.r, hc.g, value)
-    print(mode, value)
+    if mode==HAM_SET:
+      value = palette.index((tr,tg,tb))
+      hc = pygame.Color(tr,tg,tb)
     yield (mode, value)
 def rgb24hamtest(pixels):
   c0 = c1 = c2 = c3 = 0
