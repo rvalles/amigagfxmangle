@@ -286,7 +286,7 @@ def rgb24toham6mddithrnd(pixels, palette):
       value = palette.index((tr,tg,tb))
       hc = pygame.Color(tr,tg,tb)
     yield (mode, value)
-def rgb24toham6mddithord(pixels, palette):
+def rgb24toham6mddithord(pixels, palette, polar):
   hc = pygame.Color(0,0,0)
   for idx, sc in enumerate(pixels):
     tr = sc.r>>4
@@ -317,7 +317,7 @@ def rgb24toham6mddithord(pixels, palette):
     if mode==HAM_MODIFY_RED:
       value = tr
       x = sc.r-(tr|tr<<4)
-      if (x!=0) and (idx&0x1 > abs(x>>3)):
+      if (x!=0) and ((idx^polar)&0x1 < abs(x>>3)):
         if x>0:
             value += 1
         else:
@@ -326,7 +326,7 @@ def rgb24toham6mddithord(pixels, palette):
     if mode==HAM_MODIFY_GREEN:
       value = tg
       x = sc.g-(tg|tg<<4)
-      if (x!=0) and (idx&0x1 < abs(x>>3)):
+      if (x!=0) and ((idx^polar)&0x1 < abs(x>>3)):
         if x>0:
             value += 1
         else:
@@ -335,7 +335,7 @@ def rgb24toham6mddithord(pixels, palette):
     if mode==HAM_MODIFY_BLUE:
       value = tb
       x = sc.b-(tb|tb<<4)
-      if (x!=0) and (idx&0x1 < abs(x>>3)):
+      if (x!=0) and ((idx^polar)&0x1 < abs(x>>3)):
         if x>0:
             value += 1
         else:
