@@ -71,6 +71,9 @@ def rgb24to12(pixels):
     g=sc.g>>4
     b=sc.b>>4
     yield pygame.Color(r,g,b)
+def rgb24to1bit(pixels):
+  for sc in pixels:
+    yield 1 if random.randrange(255) < sc.hsla[2]*2.55 else 0
 def rgb24togrey4(pixels):
   for sc in pixels:
     sy=sc.hsla[2]*2.55
