@@ -317,7 +317,7 @@ def rgb24toham6mddithord(pixels, palette):
     if mode==HAM_MODIFY_RED:
       value = tr
       x = sc.r-(tr|tr<<4)
-      if idx&0x3 > abs(x>>2):
+      if (x!=0) and (idx&0x1 > abs(x>>3)):
         if x>0:
             value += 1
         else:
@@ -326,7 +326,7 @@ def rgb24toham6mddithord(pixels, palette):
     if mode==HAM_MODIFY_GREEN:
       value = tg
       x = sc.g-(tg|tg<<4)
-      if idx&0x3 < abs(x>>2):
+      if (x!=0) and (idx&0x1 < abs(x>>3)):
         if x>0:
             value += 1
         else:
@@ -335,7 +335,7 @@ def rgb24toham6mddithord(pixels, palette):
     if mode==HAM_MODIFY_BLUE:
       value = tb
       x = sc.b-(tb|tb<<4)
-      if idx&0x3 < abs(x>>2):
+      if (x!=0) and (idx&0x1 < abs(x>>3)):
         if x>0:
             value += 1
         else:
