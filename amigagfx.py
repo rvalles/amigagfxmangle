@@ -236,10 +236,18 @@ def rgb24toham6mddithrnd(pixels, palette):
     dr = abs(tr-hc.r)
     dg = abs(tg-hc.g)
     db = abs(tb-hc.b)
-    dm = max(dr, dg, db)
     dc = [(1 if x else 0) for x in [dr,dg,db]].count(1)
+    dm = max(dr, dg, db)
     if dc > 1 and (tr,tg,tb) in palette:
       mode = HAM_SET
+    elif dg == dr == db:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_RED, HAM_MODIFY_RED, HAM_MODIFY_BLUE])
+    elif dm == dg == dr:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_RED])
+    elif dm == dg == db:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_BLUE])
+    elif dm == db == dr:
+        mode = random.choice([HAM_MODIFY_RED, HAM_MODIFY_BLUE])
     elif dm == dg:
       mode = HAM_MODIFY_GREEN
     elif dm == dr:
@@ -248,19 +256,90 @@ def rgb24toham6mddithrnd(pixels, palette):
       mode = HAM_MODIFY_BLUE
     #return the color we selected
     if mode==HAM_MODIFY_RED:
-      value = sc.r//17
-      if random.randrange(17) < sc.r%17:
-        value=min(value+1,15)
+      value = tr
+      x = sc.r-(tr|tr<<4)
+      if random.randrange(16) < abs(x):
+        if x>0:
+            value += 1
+        else:
+            value -= 1
       hc = pygame.Color(value, hc.g, hc.b)
     if mode==HAM_MODIFY_GREEN:
-      value = sc.g//17
-      if random.randrange(17) < sc.g%17:
-        value=min(value+1,15)
+      value = tg
+      x = sc.g-(tg|tg<<4)
+      if random.randrange(16) < abs(x):
+        if x>0:
+            value += 1
+        else:
+            value -= 1
       hc = pygame.Color(hc.r, value, hc.b)
     if mode==HAM_MODIFY_BLUE:
-      value = sc.b//17
-      if random.randrange(17) < sc.b%17:
-        value=min(value+1,15)
+      value = tb
+      x = sc.b-(tb|tb<<4)
+      if random.randrange(16) < abs(x):
+        if x>0:
+            value += 1
+        else:
+            value -= 1
+      hc = pygame.Color(hc.r, hc.g, value)
+    if mode==HAM_SET:
+      value = palette.index((tr,tg,tb))
+      hc = pygame.Color(tr,tg,tb)
+    yield (mode, value)
+def rgb24toham6mddithord(pixels, palette):
+  hc = pygame.Color(0,0,0)
+  for idx, sc in enumerate(pixels):
+    tr = sc.r>>4
+    tg = sc.g>>4
+    tb = sc.b>>4
+    dr = abs(tr-hc.r)
+    dg = abs(tg-hc.g)
+    db = abs(tb-hc.b)
+    dc = [(1 if x else 0) for x in [dr,dg,db]].count(1)
+    dm = max(dr, dg, db)
+    if dc > 1 and (tr,tg,tb) in palette:
+      mode = HAM_SET
+    elif dg == dr == db:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_RED, HAM_MODIFY_RED, HAM_MODIFY_BLUE])
+    elif dm == dg == dr:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_RED])
+    elif dm == dg == db:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_BLUE])
+    elif dm == db == dr:
+        mode = random.choice([HAM_MODIFY_RED, HAM_MODIFY_BLUE])
+    elif dm == dg:
+      mode = HAM_MODIFY_GREEN
+    elif dm == dr:
+      mode = HAM_MODIFY_RED
+    else:
+      mode = HAM_MODIFY_BLUE
+    #return the color we selected
+    if mode==HAM_MODIFY_RED:
+      value = tr
+      x = sc.r-(tr|tr<<4)
+      if idx&0x3 > abs(x>>2):
+        if x>0:
+            value += 1
+        else:
+            value -= 1
+      hc = pygame.Color(value, hc.g, hc.b)
+    if mode==HAM_MODIFY_GREEN:
+      value = tg
+      x = sc.g-(tg|tg<<4)
+      if idx&0x3 < abs(x>>2):
+        if x>0:
+            value += 1
+        else:
+            value -= 1
+      hc = pygame.Color(hc.r, value, hc.b)
+    if mode==HAM_MODIFY_BLUE:
+      value = tb
+      x = sc.b-(tb|tb<<4)
+      if idx&0x3 < abs(x>>2):
+        if x>0:
+            value += 1
+        else:
+            value -= 1
       hc = pygame.Color(hc.r, hc.g, value)
     if mode==HAM_SET:
       value = palette.index((tr,tg,tb))
