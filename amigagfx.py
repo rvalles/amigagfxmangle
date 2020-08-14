@@ -299,14 +299,8 @@ def rgb24toham6mddithord(pixels, palette, polar):
     dm = max(dr, dg, db)
     if dc > 1 and (tr,tg,tb) in palette:
       mode = HAM_SET
-    elif dg == dr == db:
-        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_RED, HAM_MODIFY_RED, HAM_MODIFY_BLUE])
-    elif dm == dg == dr:
-        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_RED])
-    elif dm == dg == db:
-        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_BLUE])
-    elif dm == db == dr:
-        mode = random.choice([HAM_MODIFY_RED, HAM_MODIFY_BLUE])
+    elif dm == 0:
+        mode = random.choice([HAM_MODIFY_GREEN, HAM_MODIFY_GREEN, HAM_MODIFY_RED, HAM_MODIFY_RED, HAM_MODIFY_BLUE])
     elif dm == dg:
       mode = HAM_MODIFY_GREEN
     elif dm == dr:
@@ -317,7 +311,7 @@ def rgb24toham6mddithord(pixels, palette, polar):
     if mode==HAM_MODIFY_RED:
       value = tr
       x = sc.r-(tr|tr<<4)
-      if (x!=0) and ((idx^polar)&0x1 < abs(x>>3)):
+      if (x!=0) and ((idx^polar)&0x1 and abs(x>>3)):
         if x>0:
             value += 1
         else:
@@ -326,7 +320,7 @@ def rgb24toham6mddithord(pixels, palette, polar):
     if mode==HAM_MODIFY_GREEN:
       value = tg
       x = sc.g-(tg|tg<<4)
-      if (x!=0) and ((idx^polar)&0x1 < abs(x>>3)):
+      if (x!=0) and ((idx^polar)&0x1 and abs(x>>3)):
         if x>0:
             value += 1
         else:
@@ -335,7 +329,7 @@ def rgb24toham6mddithord(pixels, palette, polar):
     if mode==HAM_MODIFY_BLUE:
       value = tb
       x = sc.b-(tb|tb<<4)
-      if (x!=0) and ((idx^polar)&0x1 < abs(x>>3)):
+      if (x!=0) and ((idx^polar)&0x1 and abs(x>>3)):
         if x>0:
             value += 1
         else:
